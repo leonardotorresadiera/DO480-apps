@@ -1,0 +1,700 @@
+[student@workstation ~]$ lab start quayacm-restrict
+
+Starting lab.
+
+ · Checking lab systems .............................................................................................................. SUCCESS
+ · Checking that the OCP hub is up and ready ......................................................................................... SUCCESS
+ · Checking that RHACM is installed. Installing if needed ............................................................................ SUCCESS
+ · Checking that MulticlusterHub is deployed. Deploying if needed .................................................................... SUCCESS
+ · Importing the managed clusters .................................................................................................... SUCCESS
+ · Removing Quay CRD ................................................................................................................. SUCCESS
+ · Installing Quay ................................................................................................................... SUCCESS
+ · Project 'policies' is not present ................................................................................................. SUCCESS
+ · Copy exercise files ............................................................................................................... SUCCESS
+ · Creating Quay resources ........................................................................................................... SUCCESS
+ · Creating insecure deployments ..................................................................................................... SUCCESS
+ · Restoring the image controller object in managed clusters ......................................................................... SUCCESS
+ · Login in managed clusters ......................................................................................................... SUCCESS
+ · Removing invoices-app namespaces .................................................................................................. SUCCESS
+ · Logging out ....................................................................................................................... SUCCESS
+
+[student@workstation ~]$ oc login -u admin -p redhat https://api.ocp4.example.com:6443
+Login successful.
+
+You have access to 79 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "default".
+[student@workstation ~]$ oc create namespaces policies
+Error: must specify one of -f and -k
+
+error: unknown command "namespaces policies"
+See 'oc create -h' for help and examples
+[student@workstation ~]$ oc create namespace policies
+namespace/policies created
+[student@workstation ~]$ cd DO480/labs/quayacm-restrict/
+[student@workstation quayacm-restrict]$ ls -l
+total 8
+-rw-rw-r--. 1 student student 1777 Oct 26 17:54 image-policy.yaml
+-rw-rw-r--. 1 student student 2111 Oct 26 17:54 template-app-deployment.yaml
+[student@workstation quayacm-restrict]$ nano image-policy.yaml 
+[student@workstation quayacm-restrict]$ oc apply -f image-policy.yaml -n policies
+policy.policy.open-cluster-management.io/image-policy created
+placementbinding.policy.open-cluster-management.io/binding-image-policy created
+placementrule.apps.open-cluster-management.io/placement-image-policy created
+[student@workstation quayacm-restrict]$ ls l
+ls: cannot access 'l': No such file or directory
+[student@workstation quayacm-restrict]$ ls -l
+total 8
+-rw-rw-r--. 1 student student 1853 Oct 26 19:24 image-policy.yaml
+-rw-rw-r--. 1 student student 2111 Oct 26 17:54 template-app-deployment.yaml
+[student@workstation quayacm-restrict]$ cat template-app-deployment.yaml 
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  app: ${APPLICATION}
+  template: mysql-persistent-template
+metadata:
+  annotations:
+    openshift.io/display-name: Application for persistence of an application
+  name: ${APPLICATION}-template
+
+objects:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: ${DATABASE_SERVICE_NAME}-${APPLICATION}
+  spec:
+    replicas: "${{REPLICAS}}"
+    selector:
+      matchLabels:
+        app: ${DATABASE_SERVICE_NAME}-${APPLICATION}
+    template:
+      metadata:
+        labels:
+          app: ${DATABASE_SERVICE_NAME}-${APPLICATION}
+      spec:
+        containers:
+        - env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: r00tpa55
+          - name: MYSQL_USER
+            value: user1
+          - name: MYSQL_PASSWORD
+            value: mypa55
+          - name: MYSQL_DATABASE
+            value: items
+          name: mysql
+          image: ${MYSQL_IMAGE}
+          ports:
+          - containerPort: 3306
+            name: mysql
+          imagePullPolicy: Always
+          volumeMounts:
+          #- mountPath: /var/lib/mysql/data
+          - mountPath: /var/lib/mysql
+            name: db-volume
+        volumes:
+        - emptyDir:
+            medium: ""
+          name: db-volume
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      name: ${DATABASE_SERVICE_NAME}-${APPLICATION}
+    name: ${DATABASE_SERVICE_NAME}-${APPLICATION}
+  spec:
+    ports:
+    - port: 3306
+    selector:
+      app: ${DATABASE_SERVICE_NAME}-${APPLICATION}
+
+parameters:
+- description: MySQL image
+  displayName: MySQL image
+  name: MYSQL_IMAGE
+  required: true
+  value: central-quay-registry.apps.ocp4.example.com/public/mysql:8.0
+- description: Company application
+  displayName: Application
+  name: APPLICATION
+  required: true
+  value: "finance-application"
+- description: Number of replicas
+  displayName: Number of replicas
+  name: REPLICAS
+  required: true
+  value: "1"
+- description: The name of the OpenShift Service exposed for the database.
+  displayName: Database Service Name
+  name: DATABASE_SERVICE_NAME
+  required: true
+  value: mysql
+[student@workstation quayacm-restrict]$ oc login -u admin -p redhat https://api.ocp4-mng.example.com:6443
+Login successful.
+
+You have access to 69 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "default".
+[student@workstation quayacm-restrict]$ oc create namespace invoices-app
+namespace/invoices-app created
+[student@workstation quayacm-restrict]$ oc process -f template-app-deployment.yaml -p "APPLICATION=invoices-app" | oc create -n invoices-app -f -
+deployment.apps/mysql-invoices-app created
+service/mysql-invoices-app created
+[student@workstation quayacm-restrict]$ oc get pods -n invoices-app
+NAME                                  READY   STATUS             RESTARTS   AGE
+mysql-invoices-app-5459f489d9-tq2sc   0/1     ImagePullBackOff   0          16s
+[student@workstation quayacm-restrict]$ oc get pods -n invoices-app
+NAME                                  READY   STATUS             RESTARTS   AGE
+mysql-invoices-app-5459f489d9-tq2sc   0/1     ImagePullBackOff   0          17s
+[student@workstation quayacm-restrict]$ oc get events -n invoices-app
+LAST SEEN   TYPE      REASON              OBJECT                                     MESSAGE
+27s         Normal    Scheduled           pod/mysql-invoices-app-5459f489d9-tq2sc    Successfully assigned invoices-app/mysql-invoices-app-5459f489d9-tq2sc to master203
+24s         Normal    AddedInterface      pod/mysql-invoices-app-5459f489d9-tq2sc    Add eth0 [10.130.0.15/23] from openshift-sdn
+7s          Normal    Pulling             pod/mysql-invoices-app-5459f489d9-tq2sc    Pulling image "central-quay-registry.apps.ocp4.example.com/public/mysql:8.0"
+7s          Warning   Failed              pod/mysql-invoices-app-5459f489d9-tq2sc    Failed to pull image "central-quay-registry.apps.ocp4.example.com/public/mysql:8.0": rpc error: code = Unknown desc = Source image rejected: Running image docker://central-quay-registry.apps.ocp4.example.com/public/mysql:8.0 is rejected by policy.
+7s          Warning   Failed              pod/mysql-invoices-app-5459f489d9-tq2sc    Error: ErrImagePull
+23s         Normal    BackOff             pod/mysql-invoices-app-5459f489d9-tq2sc    Back-off pulling image "central-quay-registry.apps.ocp4.example.com/public/mysql:8.0"
+23s         Warning   Failed              pod/mysql-invoices-app-5459f489d9-tq2sc    Error: ImagePullBackOff
+27s         Normal    SuccessfulCreate    replicaset/mysql-invoices-app-5459f489d9   Created pod: mysql-invoices-app-5459f489d9-tq2sc
+27s         Normal    ScalingReplicaSet   deployment/mysql-invoices-app              Scaled up replica set mysql-invoices-app-5459f489d9 to 1
+[student@workstation quayacm-restrict]$ oc delete namespace invoices-app
+namespace "invoices-app" deleted
+[student@workstation quayacm-restrict]$ oc create namespace invoices-app
+namespace/invoices-app created
+[student@workstation quayacm-restrict]$ oc process -f template-app-deployment.yaml -p "APPLICATION=invoices-app" -p "MYSQL_IMAGE=central-quay-registry.apps.ocp4.example.com/finance/approved-mysql:8.0" | oc create -n invoices-app -f -
+deployment.apps/mysql-invoices-app created
+service/mysql-invoices-app created
+[student@workstation quayacm-restrict]$ oc get pods -n invoices-app
+NAME                                  READY   STATUS              RESTARTS   AGE
+mysql-invoices-app-67b47884c8-vhdxm   0/1     ContainerCreating   0          6s
+[student@workstation quayacm-restrict]$ oc get pods -n invoices-app
+NAME                                  READY   STATUS              RESTARTS   AGE
+mysql-invoices-app-67b47884c8-vhdxm   0/1     ContainerCreating   0          7s
+[student@workstation quayacm-restrict]$ oc get events -n invoices-app
+LAST SEEN   TYPE     REASON              OBJECT                                     MESSAGE
+12s         Normal   Scheduled           pod/mysql-invoices-app-67b47884c8-vhdxm    Successfully assigned invoices-app/mysql-invoices-app-67b47884c8-vhdxm to master203
+10s         Normal   AddedInterface      pod/mysql-invoices-app-67b47884c8-vhdxm    Add eth0 [10.130.0.16/23] from openshift-sdn
+9s          Normal   Pulling             pod/mysql-invoices-app-67b47884c8-vhdxm    Pulling image "central-quay-registry.apps.ocp4.example.com/finance/approved-mysql:8.0"
+1s          Normal   Pulled              pod/mysql-invoices-app-67b47884c8-vhdxm    Successfully pulled image "central-quay-registry.apps.ocp4.example.com/finance/approved-mysql:8.0" in 8.783796092s
+1s          Normal   Created             pod/mysql-invoices-app-67b47884c8-vhdxm    Created container mysql
+1s          Normal   Started             pod/mysql-invoices-app-67b47884c8-vhdxm    Started container mysql
+12s         Normal   SuccessfulCreate    replicaset/mysql-invoices-app-67b47884c8   Created pod: mysql-invoices-app-67b47884c8-vhdxm
+12s         Normal   ScalingReplicaSet   deployment/mysql-invoices-app              Scaled up replica set mysql-invoices-app-67b47884c8 to 1
+[student@workstation quayacm-restrict]$ oc get events -n invoices-app
+LAST SEEN   TYPE     REASON              OBJECT                                     MESSAGE
+19s         Normal   Scheduled           pod/mysql-invoices-app-67b47884c8-vhdxm    Successfully assigned invoices-app/mysql-invoices-app-67b47884c8-vhdxm to master203
+17s         Normal   AddedInterface      pod/mysql-invoices-app-67b47884c8-vhdxm    Add eth0 [10.130.0.16/23] from openshift-sdn
+16s         Normal   Pulling             pod/mysql-invoices-app-67b47884c8-vhdxm    Pulling image "central-quay-registry.apps.ocp4.example.com/finance/approved-mysql:8.0"
+8s          Normal   Pulled              pod/mysql-invoices-app-67b47884c8-vhdxm    Successfully pulled image "central-quay-registry.apps.ocp4.example.com/finance/approved-mysql:8.0" in 8.783796092s
+8s          Normal   Created             pod/mysql-invoices-app-67b47884c8-vhdxm    Created container mysql
+8s          Normal   Started             pod/mysql-invoices-app-67b47884c8-vhdxm    Started container mysql
+19s         Normal   SuccessfulCreate    replicaset/mysql-invoices-app-67b47884c8   Created pod: mysql-invoices-app-67b47884c8-vhdxm
+19s         Normal   ScalingReplicaSet   deployment/mysql-invoices-app              Scaled up replica set mysql-invoices-app-67b47884c8 to 1
+[student@workstation quayacm-restrict]$ oc get pods -n invoices-app
+NAME                                  READY   STATUS    RESTARTS   AGE
+mysql-invoices-app-67b47884c8-vhdxm   1/1     Running   0          21s
+[student@workstation quayacm-restrict]$ cd ..
+[student@workstation labs]$ cd .
+[student@workstation labs]$ cd ..
+[student@workstation DO480]$ cd ..
+[student@workstation ~]$ ls -l
+total 48
+-rw-rw-r--. 1 student student  1655 Oct 25 19:28 ca.crt
+-rw-rw-r--. 1 student student    27 Oct 25 21:28 Containerfile
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Desktop
+drwxrwxr-x. 4 student student    35 Oct 21 18:50 DO480
+-rw-rw-r--. 1 student student  1292 Oct 21 21:22 DO480-labsolutions-observability-customize-211022.zip
+-rw-rw-r--. 1 student student  2049 Oct 21 19:59 DO480-labsolutions-observability-install-211022.zip
+-rw-rw-r--. 1 student student  2561 Oct 21 21:40 DO480-labsolutions-observability-review-211022.zip
+-rw-rw-r--. 1 student student 11372 Oct 21 19:15 DO480-labsolutions-policy-gatekeeper-211022.zip
+-rw-rw-r--. 1 student student 11340 Oct 20 21:33 DO480-labsolutions-policy-governance-201022.zip
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Documents
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Downloads
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Music
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Pictures
+drwxrwxr-x. 8 student student   231 Oct 20 22:17 policy-collection
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Public
+-rw-rw-r--. 1 student student    41 Oct 25 21:55 quayadmin_token
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Templates
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Videos
+[student@workstation ~]$ zip -r DO480-labsolutions-quayacm-restrict.zip DO480
+  adding: DO480/ (stored 0%)
+  adding: DO480/labs/ (stored 0%)
+  adding: DO480/labs/quay-deploy/ (stored 0%)
+  adding: DO480/labs/quay-deploy/config.yaml (deflated 43%)
+  adding: DO480/labs/quay-deploy/quay-registry.yaml (deflated 45%)
+  adding: DO480/labs/quay-deploy/ldap.crt (deflated 28%)
+  adding: DO480/labs/quay-deploy/Containerfile (stored 0%)
+  adding: DO480/labs/quayacm-restrict/ (stored 0%)
+  adding: DO480/labs/quayacm-restrict/image-policy.yaml (deflated 68%)
+  adding: DO480/labs/quayacm-restrict/template-app-deployment.yaml (deflated 66%)
+  adding: DO480/solutions/ (stored 0%)
+[student@workstation ~]$ lab finish quayacm-restrict
+
+Finishing lab.
+
+ · Login in RHOCP .................................................................................................................... SUCCESS
+ · Removing the image policy ......................................................................................................... SUCCESS
+ · Removing the policies namespace ................................................................................................... SUCCESS
+ · Removing the budget-app namespace ................................................................................................. SUCCESS
+ · Restoring the image controller object in managed clusters ......................................................................... SUCCESS
+ · Login in managed clusters ......................................................................................................... SUCCESS
+ · Removing invoices-app namespaces .................................................................................................. SUCCESS
+ · Logging out ....................................................................................................................... SUCCESS
+ · Remove lab files .................................................................................................................. SUCCESS
+
+[student@workstation ~]$ good lab
+bash: good: command not found...
+[student@workstation ~]$ 
+[student@workstation ~]$ 
+[student@workstation ~]$ 
+[student@workstation ~]$ 
+[student@workstation ~]$ lab start quayacm-deploy
+
+Starting lab.
+
+ · Checking lab systems .............................................................................................................. SUCCESS
+ · Checking that the OCP hub is up and ready ......................................................................................... SUCCESS
+ · Checking that RHACM is installed. Installing if needed ............................................................................ SUCCESS
+ · Checking that MulticlusterHub is deployed. Deploying if needed .................................................................... SUCCESS
+ · Importing the managed clusters .................................................................................................... SUCCESS
+ · Removing Quay CRD ................................................................................................................. SUCCESS
+ · Installing Quay ................................................................................................................... SUCCESS
+ · Removing the budget-app-dev namespace ............................................................................................. SUCCESS
+ · Logging out ....................................................................................................................... SUCCESS
+
+[student@workstation ~]$ 
+[student@workstation ~]$ ls -l
+total 56
+-rw-rw-r--. 1 student student  1655 Oct 25 19:28 ca.crt
+-rw-rw-r--. 1 student student    27 Oct 25 21:28 Containerfile
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Desktop
+drwxrwxr-x. 4 student student    35 Oct 21 18:50 DO480
+-rw-rw-r--. 1 student student  1292 Oct 21 21:22 DO480-labsolutions-observability-customize-211022.zip
+-rw-rw-r--. 1 student student  2049 Oct 21 19:59 DO480-labsolutions-observability-install-211022.zip
+-rw-rw-r--. 1 student student  2561 Oct 21 21:40 DO480-labsolutions-observability-review-211022.zip
+-rw-rw-r--. 1 student student 11372 Oct 21 19:15 DO480-labsolutions-policy-gatekeeper-211022.zip
+-rw-rw-r--. 1 student student 11340 Oct 20 21:33 DO480-labsolutions-policy-governance-201022.zip
+-rw-rw-r--. 1 student student  5105 Oct 26 19:31 DO480-labsolutions-quayacm-restrict.zip
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Documents
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Downloads
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Music
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Pictures
+drwxrwxr-x. 8 student student   231 Oct 20 22:17 policy-collection
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Public
+-rw-rw-r--. 1 student student    41 Oct 25 21:55 quayadmin_token
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Templates
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Videos
+[student@workstation ~]$ cat Containerfile 
+FROM quay.io/podman/hello
+
+[student@workstation ~]$ nano Containerfile 
+[student@workstation ~]$ ls -l
+total 56
+-rw-rw-r--. 1 student student  1655 Oct 25 19:28 ca.crt
+-rw-rw-r--. 1 student student    90 Oct 26 20:40 Containerfile
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Desktop
+drwxrwxr-x. 4 student student    35 Oct 21 18:50 DO480
+-rw-rw-r--. 1 student student  1292 Oct 21 21:22 DO480-labsolutions-observability-customize-211022.zip
+-rw-rw-r--. 1 student student  2049 Oct 21 19:59 DO480-labsolutions-observability-install-211022.zip
+-rw-rw-r--. 1 student student  2561 Oct 21 21:40 DO480-labsolutions-observability-review-211022.zip
+-rw-rw-r--. 1 student student 11372 Oct 21 19:15 DO480-labsolutions-policy-gatekeeper-211022.zip
+-rw-rw-r--. 1 student student 11340 Oct 20 21:33 DO480-labsolutions-policy-governance-201022.zip
+-rw-rw-r--. 1 student student  5105 Oct 26 19:31 DO480-labsolutions-quayacm-restrict.zip
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Documents
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Downloads
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Music
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Pictures
+drwxrwxr-x. 8 student student   231 Oct 20 22:17 policy-collection
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Public
+-rw-rw-r--. 1 student student    41 Oct 25 21:55 quayadmin_token
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Templates
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Videos
+[student@workstation ~]$ podman build . -t hello:1
+STEP 1/2: FROM registry.access.redhat.com/ubi8/httpd-24:1
+Trying to pull registry.access.redhat.com/ubi8/httpd-24:1...
+Getting image source signatures
+Checking if image destination supports signatures
+Copying blob 3a1abd68bb53 done  
+Copying blob 6ac0dc04f22d done  
+Copying blob 6e5398ecafcd done  
+Copying config 4329faf96a done  
+Writing manifest to image destination
+Storing signatures
+STEP 2/2: RUN echo hello >/var/www/html/index.html
+COMMIT hello:1
+--> 2324d5df6c7
+Successfully tagged localhost/hello:1
+2324d5df6c726cc037126691661c4093006f8af264cb0cdcab2bec4ee62297d4
+[student@workstation ~]$ oc login -u admin -p redhat https://api.ocp4.example.com:6443
+Login successful.
+
+You have access to 78 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "default".
+[student@workstation ~]$ oc create namespace budget-app-dev
+namespace/budget-app-dev created
+[student@workstation ~]$ oc create -f Downloads/finance-dev-deployer-secret.yml --namespace=budget-app-dev
+secret/finance-dev-deployer-pull-secret created
+[student@workstation ~]$ podman login -u=cloudadmin -p=redhat central-quay-registry.apps.ocp4.example.com
+Login Succeeded!
+[student@workstation ~]$ podman push localhost/hello:1 central-quay-registry.apps.ocp4.example.com/finance/budget-app-dev:1
+Getting image source signatures
+Copying blob 1ac81d1e29a3 done  
+Copying blob 19a15792be87 done  
+Copying blob 2c8955d2cb2b done  
+Copying blob f589d3cfc2aa done  
+Copying config 2324d5df6c done  
+Writing manifest to image destination
+Storing signatures
+[student@workstation ~]$ cd DO480/
+[student@workstation DO480]$ cd ..
+[student@workstation ~]$ ls -l
+total 60
+-rw-rw-r--. 1 student student  1655 Oct 25 19:28 ca.crt
+-rw-rw-r--. 1 student student    90 Oct 26 20:40 Containerfile
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Desktop
+drwxrwxr-x. 4 student student    35 Oct 21 18:50 DO480
+-rw-rw-r--. 1 student student  1292 Oct 21 21:22 DO480-labsolutions-observability-customize-211022.zip
+-rw-rw-r--. 1 student student  2049 Oct 21 19:59 DO480-labsolutions-observability-install-211022.zip
+-rw-rw-r--. 1 student student  2561 Oct 21 21:40 DO480-labsolutions-observability-review-211022.zip
+-rw-rw-r--. 1 student student 11372 Oct 21 19:15 DO480-labsolutions-policy-gatekeeper-211022.zip
+-rw-rw-r--. 1 student student 11340 Oct 20 21:33 DO480-labsolutions-policy-governance-201022.zip
+-rw-rw-r--. 1 student student  5105 Oct 26 19:31 DO480-labsolutions-quayacm-restrict.zip
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Documents
+drwxr-xr-x. 2 student student    45 Oct 26 20:48 Downloads
+-rw-rw-r--. 1 student student   451 Oct 26 20:48 finance-dev-deployer-secret.yml
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Music
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Pictures
+drwxrwxr-x. 8 student student   231 Oct 20 22:17 policy-collection
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Public
+-rw-rw-r--. 1 student student    41 Oct 25 21:55 quayadmin_token
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Templates
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Videos
+[student@workstation ~]$ lab finish quayacm-deploy
+
+Finishing lab.
+
+ · Logging in to the OCP4 hub cluster ................................................................................................ SUCCESS
+ · Removing the budget-app-dev namespace ............................................................................................. SUCCESS
+ · Removing Quay CRD ................................................................................................................. SUCCESS
+ · Installing Quay ................................................................................................................... SUCCESS
+ · Removing robot secret file ........................................................................................................ SUCCESS
+ · Removing container file ........................................................................................................... SUCCESS
+ · Logging out ....................................................................................................................... SUCCESS
+
+[student@workstation ~]$ lab start quayacm-review
+
+Starting lab.
+
+ · Checking lab systems .............................................................................................................. SUCCESS
+ · Checking that the OCP hub is up and ready ......................................................................................... SUCCESS
+ · Checking that RHACM is installed. Installing if needed ............................................................................ SUCCESS
+ · Checking that MulticlusterHub is deployed. Deploying if needed .................................................................... SUCCESS
+ · Importing the managed clusters .................................................................................................... SUCCESS
+ · Removing Quay CRD ................................................................................................................. SUCCESS
+ · Installing Quay ................................................................................................................... SUCCESS
+ · Copy exercise files ............................................................................................................... SUCCESS
+ · Creating Quay resources ........................................................................................................... SUCCESS
+ · Verifying connectivity to OCP4 cluster ............................................................................................ SUCCESS
+ · Tagging production clusters ....................................................................................................... SUCCESS
+ · Restoring the image controller object in managed clusters ......................................................................... SUCCESS
+ · Login in managed clusters ......................................................................................................... SUCCESS
+ · Removing budget-app namespace ..................................................................................................... SUCCESS
+ · Logging out ....................................................................................................................... SUCCESS
+
+[student@workstation ~]$ oc login -u admin -p redhat https://api.ocp4.example.com:6443
+Login successful.
+
+You have access to 78 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "default".
+[student@workstation ~]$ oc create namespace policies
+namespace/policies created
+[student@workstation ~]$ cd DO480/labs/quayacm-review
+[student@workstation quayacm-review]$ ls -l
+total 4
+-rw-rw-r--. 1 student student 1830 Oct 26 17:54 image-policy.yaml
+[student@workstation quayacm-review]$ cat image-policy.yaml 
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: image-policy
+  annotations:
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: image-policy
+        spec:
+          remediationAction: enforce
+          severity: low
+          namespaceSelector:
+            exclude:
+              - kube-*
+            include:
+              - default
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: config.openshift.io/v1
+                kind: Image
+                metadata:
+                  name: cluster
+                spec:
+                  registrySources:
+                    allowedRegistries:
+                      - registry.redhat.io
+                      - registry.access.redhat.com
+                      - quay.io
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-image-policy
+placementRef:
+  name: placement-image-policy
+  kind: PlacementRule
+  apiGroup: apps.open-cluster-management.io
+subjects:
+- name: image-policy
+  kind: Policy
+  apiGroup: policy.open-cluster-management.io
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: placement-image-policy
+spec:
+  clusterConditions:
+  - status: "True"
+    type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+      - {key: env, operator: In, values: ["production"]}
+
+[student@workstation quayacm-review]$ ls -l
+total 4
+-rw-rw-r--. 1 student student 1830 Oct 26 17:54 image-policy.yaml
+[student@workstation quayacm-review]$ nano image-policy.yaml 
+[student@workstation quayacm-review]$ oc apply -f image-policy.yaml -n policies
+policy.policy.open-cluster-management.io/image-policy created
+placementbinding.policy.open-cluster-management.io/binding-image-policy created
+placementrule.apps.open-cluster-management.io/placement-image-policy created
+[student@workstation quayacm-review]$ oc get image.config.openshift.io/cluster -o yaml
+apiVersion: config.openshift.io/v1
+kind: Image
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+    release.openshift.io/create-only: "true"
+  creationTimestamp: "2022-05-13T15:58:17Z"
+  generation: 5
+  name: cluster
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 73cada64-5434-48af-8208-ec144ee8555d
+  resourceVersion: "7446136"
+  uid: 214ff292-782c-4b92-b31b-0cc1b4af75a1
+spec: {}
+status:
+  internalRegistryHostname: image-registry.openshift-image-registry.svc:5000
+[student@workstation quayacm-review]$ oc login -u admin -p redhat https://api.ocp4-mng.example.com:6443
+Login successful.
+
+You have access to 69 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "default".
+[student@workstation quayacm-review]$ oc get image.config.openshift.io/cluster -o yaml
+apiVersion: config.openshift.io/v1
+kind: Image
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+    release.openshift.io/create-only: "true"
+  creationTimestamp: "2022-05-13T16:42:21Z"
+  generation: 4
+  name: cluster
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 13a25437-a584-434b-a32f-2f3c6d08f87c
+  resourceVersion: "2479208"
+  uid: b4070508-948f-4d43-a7eb-f876e7a72c9e
+spec:
+  registrySources:
+    allowedRegistries:
+    - registry.redhat.io
+    - registry.access.redhat.com
+    - quay.io
+status:
+  internalRegistryHostname: image-registry.openshift-image-registry.svc:5000
+[student@workstation quayacm-review]$ 
+[student@workstation quayacm-review]$ 
+[student@workstation quayacm-review]$ oc login -u admin -p redhat https://api.ocp4.example.com:6443
+Login successful.
+
+You have access to 79 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "default".
+[student@workstation quayacm-review]$ oc create namespace budget-app
+namespace/budget-app created
+[student@workstation quayacm-review]$ oc create -f ~/Downloads/finance-prod-deployer-secret.yml -n budget-app
+secret/finance-prod-deployer-pull-secret created
+[student@workstation quayacm-review]$ oc login -u admin -p redhat https://api.ocp4-mng.example.com:6443
+Login successful.
+
+You have access to 69 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "default".
+[student@workstation quayacm-review]$ oc create namespace budget-app
+namespace/budget-app created
+[student@workstation quayacm-review]$ oc create -f ~/Downloads/finance-prod-deployer-secret.yml -n budget-app
+secret/finance-prod-deployer-pull-secret created
+[student@workstation quayacm-review]$ oc login -u admin -p redhat https://api.ocp4-mng.example.com:6443
+Login successful.
+
+You have access to 70 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "default".
+[student@workstation quayacm-review]$ oc get events -n budget-app | grep Failed
+31s         Warning   Failed              pod/budget-app-55f48fb88c-78bmt          Failed to pull image "central-quay-registry.apps.ocp4.example.com/finance/budget-app-dev:1": rpc error: code = Unknown desc = reading manifest 1 in central-quay-registry.apps.ocp4.example.com/finance/budget-app-dev: manifest unknown: manifest unknown
+31s         Warning   Failed              pod/budget-app-55f48fb88c-78bmt          Error: ErrImagePull
+17s         Warning   Failed              pod/budget-app-55f48fb88c-78bmt          Error: ImagePullBackOff
+[student@workstation quayacm-review]$ cat /home/student/prod_deployer_token 
+N04CSQPSCFHK9T4N2FN691EDTVH9W7378B7H3QM1IFD1E1LENJ6QJL0HTX7VHQOB
+[student@workstation quayacm-review]$ skopeo login -u=finance+prod_deployer -p=N04CSQPSCFHK9T4N2FN691EDTVH9W7378B7H3QM1IFD1E1LENJ6QJL0HTX7VHQOB central-quay-registry.apps.ocp4.example.com
+Login Succeeded!
+[student@workstation quayacm-review]$ skopeo copy docker://central-quay-registry.apps.ocp4.example.com/finance/budget-app-dev:1.0 docker://central-quay-registry.apps.ocp4.example.com/finance/budget-app:1.0
+Getting image source signatures
+Copying blob db051e54f588 skipped: already exists  
+Copying blob d6739bc40a1c skipped: already exists  
+Copying blob cbf018ec2235 skipped: already exists  
+Copying blob ba4666425c8e skipped: already exists  
+Copying blob 968e83f291b4 skipped: already exists  
+Copying blob 3ebf74f20a96 skipped: already exists  
+Copying blob a036894e9733 skipped: already exists  
+Copying blob 4ca545ee6d5d skipped: already exists  
+Copying blob 4ca545ee6d5d skipped: already exists  
+Copying blob 4ca545ee6d5d .                                        
+Writing manifest to image destination
+Storing signatures
+[student@workstation quayacm-review]$ oc get events -n budget-app | grep Failed
+4m30s       Warning   Failed              pod/budget-app-55f48fb88c-78bmt          Failed to pull image "central-quay-registry.apps.ocp4.example.com/finance/budget-app-dev:1": rpc error: code = Unknown desc = reading manifest 1 in central-quay-registry.apps.ocp4.example.com/finance/budget-app-dev: manifest unknown: manifest unknown
+4m30s       Warning   Failed              pod/budget-app-55f48fb88c-78bmt          Error: ErrImagePull
+4m16s       Warning   Failed              pod/budget-app-55f48fb88c-78bmt          Error: ImagePullBackOff
+7s          Warning   Failed              pod/budget-app-64b4f9d44c-pwnkc          Failed to pull image "central-quay-registry.apps.ocp4.example.com/finance/budget-app:1.0": rpc error: code = Unknown desc = Source image rejected: Running image docker://central-quay-registry.apps.ocp4.example.com/finance/budget-app:1.0 is rejected by policy.
+7s          Warning   Failed              pod/budget-app-64b4f9d44c-pwnkc          Error: ErrImagePull
+18s         Warning   Failed              pod/budget-app-64b4f9d44c-pwnkc          Error: ImagePullBackOff
+[student@workstation quayacm-review]$ central-quay-registry.apps.ocp4.example.com/finance/budget-app:1.0
+bash: central-quay-registry.apps.ocp4.example.com/finance/budget-app:1.0: No such file or directory
+[student@workstation quayacm-review]$ oc get pods -n budget-app
+NAME                          READY   STATUS             RESTARTS   AGE
+budget-app-55f48fb88c-78bmt   0/1     ImagePullBackOff   0          10m
+budget-app-64b4f9d44c-pwnkc   0/1     ImagePullBackOff   0          4m32s
+[student@workstation quayacm-review]$ oc get pods -w -n budget-app
+NAME                          READY   STATUS             RESTARTS   AGE
+budget-app-55f48fb88c-78bmt   0/1     ImagePullBackOff   0          10m
+budget-app-64b4f9d44c-pwnkc   0/1     ImagePullBackOff   0          4m37s
+budget-app-55f48fb88c-78bmt   0/1     ErrImagePull       0          11m
+budget-app-55f48fb88c-78bmt   0/1     ImagePullBackOff   0          11m
+budget-app-64b4f9d44c-pwnkc   1/1     Running            0          5m56s
+budget-app-55f48fb88c-78bmt   0/1     Terminating        0          11m
+budget-app-55f48fb88c-78bmt   0/1     Terminating        0          11m
+budget-app-55f48fb88c-78bmt   0/1     Terminating        0          11m
+budget-app-55f48fb88c-78bmt   0/1     Terminating        0          11m
+budget-app-55f48fb88c-78bmt   0/1     Terminating        0          11m
+[student@workstation quayacm-review]$ oc get pods -w -n budget-app
+NAME                          READY   STATUS    RESTARTS   AGE
+budget-app-64b4f9d44c-pwnkc   1/1     Running   0          7m7s
+^C[student@workstation quayacm-review]$ lab grade quayacm-review
+
+Grading lab.
+
+ · Verifying connectivity to OCP4 cluster ............................................................................................ SUCCESS
+ · Verifying budget-app namespace exists ............................................................................................. SUCCESS
+ · Verifying connectivity to managed clusters ........................................................................................ SUCCESS
+ · Verifying budget-app namespace exists in managed clusters ......................................................................... SUCCESS
+ · Check that the /home/student/prod_deployer_token file exists ...................................................................... SUCCESS
+ · Log in to production cluster ...................................................................................................... SUCCESS
+ · Verifying that the image policy is applied in production clusters and contains the central quay registry image .................... SUCCESS
+ · Verifying that the budget-app is running in production clusters ................................................................... SUCCESS
+
+Overall lab grade: PASS
+
+[student@workstation quayacm-review]$ ls -l
+total 4
+-rw-rw-r--. 1 student student 1830 Oct 26 21:12 image-policy.yaml
+[student@workstation quayacm-review]$ cd ..
+[student@workstation labs]$ cd ..
+[student@workstation DO480]$ cd ..
+[student@workstation ~]$ ls -l
+total 60
+-rw-rw-r--. 1 student student  1655 Oct 25 19:28 ca.crt
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Desktop
+drwxrwxr-x. 4 student student    35 Oct 21 18:50 DO480
+-rw-rw-r--. 1 student student  1292 Oct 21 21:22 DO480-labsolutions-observability-customize-211022.zip
+-rw-rw-r--. 1 student student  2049 Oct 21 19:59 DO480-labsolutions-observability-install-211022.zip
+-rw-rw-r--. 1 student student  2561 Oct 21 21:40 DO480-labsolutions-observability-review-211022.zip
+-rw-rw-r--. 1 student student 11372 Oct 21 19:15 DO480-labsolutions-policy-gatekeeper-211022.zip
+-rw-rw-r--. 1 student student 11340 Oct 20 21:33 DO480-labsolutions-policy-governance-201022.zip
+-rw-rw-r--. 1 student student  5105 Oct 26 19:31 DO480-labsolutions-quayacm-restrict.zip
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Documents
+drwxr-xr-x. 2 student student    46 Oct 26 21:18 Downloads
+-rw-rw-r--. 1 student student   451 Oct 26 20:48 finance-dev-deployer-secret.yml
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Music
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Pictures
+drwxrwxr-x. 8 student student   231 Oct 20 22:17 policy-collection
+-rw-r--r--. 1 student student    65 Oct 26 21:17 prod_deployer_token
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Public
+-rw-rw-r--. 1 student student    41 Oct 25 21:55 quayadmin_token
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Templates
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Videos
+[student@workstation ~]$ zip -r DO480-labsolutions-quayacm-review.zip DO480
+  adding: DO480/ (stored 0%)
+  adding: DO480/labs/ (stored 0%)
+  adding: DO480/labs/quay-deploy/ (stored 0%)
+  adding: DO480/labs/quay-deploy/config.yaml (deflated 43%)
+  adding: DO480/labs/quay-deploy/quay-registry.yaml (deflated 45%)
+  adding: DO480/labs/quay-deploy/ldap.crt (deflated 28%)
+  adding: DO480/labs/quay-deploy/Containerfile (stored 0%)
+  adding: DO480/labs/quayacm-review/ (stored 0%)
+  adding: DO480/labs/quayacm-review/image-policy.yaml (deflated 67%)
+  adding: DO480/solutions/ (stored 0%)
+[student@workstation ~]$ lab finish quayacm-review
+
+Finishing lab.
+
+ · Verifying connectivity to OCP4 cluster ............................................................................................ SUCCESS
+ · Untagging production clusters ..................................................................................................... SUCCESS
+ · Removing Quay ..................................................................................................................... SUCCESS
+ · Remove lab files .................................................................................................................. SUCCESS
+ · Removing the image policy ......................................................................................................... SUCCESS
+ · Removing the policies namespace ................................................................................................... SUCCESS
+ · Removing the budget-app namespace ................................................................................................. SUCCESS
+ · Removing robot secret file ........................................................................................................ SUCCESS
+ · Removing token file ............................................................................................................... SUCCESS
+ · Removing container file ........................................................................................................... SUCCESS
+ · Restoring the image controller object in managed clusters ......................................................................... SUCCESS
+ · Login in managed clusters ......................................................................................................... SUCCESS
+ · Removing budget-app namespace ..................................................................................................... SUCCESS
+ · Logging out ....................................................................................................................... SUCCESS
+
+[student@workstation ~]$ 
+
