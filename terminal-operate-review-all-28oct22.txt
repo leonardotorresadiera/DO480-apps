@@ -1,0 +1,797 @@
+[student@workstation ~]$ ls -l
+total 112
+-rw-rw-r--. 1 student student  1655 Oct 25 19:28 ca.crt
+-rw-rw-r--. 1 student student    27 Oct 27 20:59 Containerfile
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Desktop
+drwxrwxr-x. 4 student student    35 Oct 21 18:50 DO480
+-rw-rw-r--. 1 student student  1292 Oct 21 21:22 DO480-labsolutions-observability-customize-211022.zip
+-rw-rw-r--. 1 student student  2049 Oct 21 19:59 DO480-labsolutions-observability-install-211022.zip
+-rw-rw-r--. 1 student student  2561 Oct 21 21:40 DO480-labsolutions-observability-review-211022.zip
+-rw-rw-r--. 1 student student 11372 Oct 21 19:15 DO480-labsolutions-policy-gatekeeper-211022.zip
+-rw-rw-r--. 1 student student 11340 Oct 20 21:33 DO480-labsolutions-policy-governance-201022.zip
+-rw-rw-r--. 1 student student  5105 Oct 26 19:31 DO480-labsolutions-quayacm-restrict.zip
+-rw-rw-r--. 1 student student  4150 Oct 26 21:40 DO480-labsolutions-quayacm-review.zip
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Documents
+drwxr-xr-x. 2 student student    52 Oct 27 19:50 Downloads
+-rw-rw-r--. 1 student student   451 Oct 26 20:48 finance-dev-deployer-secret.yml
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Music
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Pictures
+drwxrwxr-x. 8 student student   231 Oct 20 22:17 policy-collection
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Public
+-rw-rw-r--. 1 student student    41 Oct 25 21:55 quayadmin_token
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Templates
+-rw-r--r--. 1 student student 43072 Oct 26 21:43 terminal-quayacm-review-26oct22.txt
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Videos
+[student@workstation ~]$ git clone https://github.com/leonardotorresadiera/DO480-apps.git
+Cloning into 'DO480-apps'...
+remote: Enumerating objects: 524, done.
+remote: Counting objects: 100% (44/44), done.
+remote: Compressing objects: 100% (38/38), done.
+remote: Total 524 (delta 11), reused 25 (delta 4), pack-reused 480
+Receiving objects: 100% (524/524), 67.49 KiB | 1.44 MiB/s, done.
+Resolving deltas: 100% (228/228), done.
+[student@workstation ~]$ ls -l
+total 112
+-rw-rw-r--. 1 student student  1655 Oct 25 19:28 ca.crt
+-rw-rw-r--. 1 student student    27 Oct 27 20:59 Containerfile
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Desktop
+drwxrwxr-x. 4 student student    35 Oct 21 18:50 DO480
+drwxrwxr-x. 6 student student    96 Oct 28 17:43 DO480-apps
+-rw-rw-r--. 1 student student  1292 Oct 21 21:22 DO480-labsolutions-observability-customize-211022.zip
+-rw-rw-r--. 1 student student  2049 Oct 21 19:59 DO480-labsolutions-observability-install-211022.zip
+-rw-rw-r--. 1 student student  2561 Oct 21 21:40 DO480-labsolutions-observability-review-211022.zip
+-rw-rw-r--. 1 student student 11372 Oct 21 19:15 DO480-labsolutions-policy-gatekeeper-211022.zip
+-rw-rw-r--. 1 student student 11340 Oct 20 21:33 DO480-labsolutions-policy-governance-201022.zip
+-rw-rw-r--. 1 student student  5105 Oct 26 19:31 DO480-labsolutions-quayacm-restrict.zip
+-rw-rw-r--. 1 student student  4150 Oct 26 21:40 DO480-labsolutions-quayacm-review.zip
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Documents
+drwxr-xr-x. 2 student student    52 Oct 27 19:50 Downloads
+-rw-rw-r--. 1 student student   451 Oct 26 20:48 finance-dev-deployer-secret.yml
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Music
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Pictures
+drwxrwxr-x. 8 student student   231 Oct 20 22:17 policy-collection
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Public
+-rw-rw-r--. 1 student student    41 Oct 25 21:55 quayadmin_token
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Templates
+-rw-r--r--. 1 student student 43072 Oct 26 21:43 terminal-quayacm-review-26oct22.txt
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Videos
+[student@workstation ~]$ cd DO480-apps/
+[student@workstation DO480-apps]$ ls -l
+total 4
+drwxrwxr-x. 2 student student 128 Oct 28 17:43 mysql
+drwxrwxr-x. 2 student student  91 Oct 28 17:43 quayacm-deployment
+drwxrwxr-x. 2 student student  73 Oct 28 17:43 quayacm-review
+-rw-rw-r--. 1 student student  54 Oct 28 17:43 README.md
+[student@workstation DO480-apps]$ git branch
+* main
+[student@workstation DO480-apps]$ cp ../*.zip  .
+[student@workstation DO480-apps]$ ls -l
+total 56
+-rw-rw-r--. 1 student student  1292 Oct 28 17:43 DO480-labsolutions-observability-customize-211022.zip
+-rw-rw-r--. 1 student student  2049 Oct 28 17:43 DO480-labsolutions-observability-install-211022.zip
+-rw-rw-r--. 1 student student  2561 Oct 28 17:43 DO480-labsolutions-observability-review-211022.zip
+-rw-rw-r--. 1 student student 11372 Oct 28 17:43 DO480-labsolutions-policy-gatekeeper-211022.zip
+-rw-rw-r--. 1 student student 11340 Oct 28 17:43 DO480-labsolutions-policy-governance-201022.zip
+-rw-rw-r--. 1 student student  5105 Oct 28 17:43 DO480-labsolutions-quayacm-restrict.zip
+-rw-rw-r--. 1 student student  4150 Oct 28 17:43 DO480-labsolutions-quayacm-review.zip
+drwxrwxr-x. 2 student student   128 Oct 28 17:43 mysql
+drwxrwxr-x. 2 student student    91 Oct 28 17:43 quayacm-deployment
+drwxrwxr-x. 2 student student    73 Oct 28 17:43 quayacm-review
+-rw-rw-r--. 1 student student    54 Oct 28 17:43 README.md
+[student@workstation DO480-apps]$ cp ../terminal-quayacm-review-26oct22.txt .
+[student@workstation DO480-apps]$ ls -l
+total 100
+-rw-rw-r--. 1 student student  1292 Oct 28 17:43 DO480-labsolutions-observability-customize-211022.zip
+-rw-rw-r--. 1 student student  2049 Oct 28 17:43 DO480-labsolutions-observability-install-211022.zip
+-rw-rw-r--. 1 student student  2561 Oct 28 17:43 DO480-labsolutions-observability-review-211022.zip
+-rw-rw-r--. 1 student student 11372 Oct 28 17:43 DO480-labsolutions-policy-gatekeeper-211022.zip
+-rw-rw-r--. 1 student student 11340 Oct 28 17:43 DO480-labsolutions-policy-governance-201022.zip
+-rw-rw-r--. 1 student student  5105 Oct 28 17:43 DO480-labsolutions-quayacm-restrict.zip
+-rw-rw-r--. 1 student student  4150 Oct 28 17:43 DO480-labsolutions-quayacm-review.zip
+drwxrwxr-x. 2 student student   128 Oct 28 17:43 mysql
+drwxrwxr-x. 2 student student    91 Oct 28 17:43 quayacm-deployment
+drwxrwxr-x. 2 student student    73 Oct 28 17:43 quayacm-review
+-rw-rw-r--. 1 student student    54 Oct 28 17:43 README.md
+-rw-r--r--. 1 student student 43072 Oct 28 17:43 terminal-quayacm-review-26oct22.txt
+[student@workstation DO480-apps]$ git add .
+[student@workstation DO480-apps]$ git commit -m "labs y terminal"
+[main a922325] labs y terminal
+ Committer: Student User <student@workstation.lab.example.com>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 8 files changed, 700 insertions(+)
+ create mode 100644 DO480-labsolutions-observability-customize-211022.zip
+ create mode 100644 DO480-labsolutions-observability-install-211022.zip
+ create mode 100644 DO480-labsolutions-observability-review-211022.zip
+ create mode 100644 DO480-labsolutions-policy-gatekeeper-211022.zip
+ create mode 100644 DO480-labsolutions-policy-governance-201022.zip
+ create mode 100644 DO480-labsolutions-quayacm-restrict.zip
+ create mode 100644 DO480-labsolutions-quayacm-review.zip
+ create mode 100644 terminal-quayacm-review-26oct22.txt
+[student@workstation DO480-apps]$ git push 
+Gtk-Message: 17:44:19.240: Failed to load module "canberra-gtk-module"
+Gtk-Message: 17:44:31.479: Failed to load module "canberra-gtk-module"
+Enumerating objects: 11, done.
+Counting objects: 100% (11/11), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (10/10), done.
+Writing objects: 100% (10/10), 28.26 KiB | 14.13 MiB/s, done.
+Total 10 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), done.
+To https://github.com/leonardotorresadiera/DO480-apps.git
+   01fbec6..a922325  main -> main
+[student@workstation DO480-apps]$ cd ..
+[student@workstation ~]$ ls -l
+total 116
+-rw-rw-r--. 1 student student  1655 Oct 25 19:28 ca.crt
+-rw-rw-r--. 1 student student    27 Oct 27 20:59 Containerfile
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Desktop
+drwxrwxr-x. 4 student student    35 Oct 21 18:50 DO480
+drwxrwxr-x. 6 student student  4096 Oct 28 17:43 DO480-apps
+-rw-rw-r--. 1 student student  1292 Oct 21 21:22 DO480-labsolutions-observability-customize-211022.zip
+-rw-rw-r--. 1 student student  2049 Oct 21 19:59 DO480-labsolutions-observability-install-211022.zip
+-rw-rw-r--. 1 student student  2561 Oct 21 21:40 DO480-labsolutions-observability-review-211022.zip
+-rw-rw-r--. 1 student student 11372 Oct 21 19:15 DO480-labsolutions-policy-gatekeeper-211022.zip
+-rw-rw-r--. 1 student student 11340 Oct 20 21:33 DO480-labsolutions-policy-governance-201022.zip
+-rw-rw-r--. 1 student student  5105 Oct 26 19:31 DO480-labsolutions-quayacm-restrict.zip
+-rw-rw-r--. 1 student student  4150 Oct 26 21:40 DO480-labsolutions-quayacm-review.zip
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Documents
+drwxr-xr-x. 2 student student    52 Oct 27 19:50 Downloads
+-rw-rw-r--. 1 student student   451 Oct 26 20:48 finance-dev-deployer-secret.yml
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Music
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Pictures
+drwxrwxr-x. 8 student student   231 Oct 20 22:17 policy-collection
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Public
+-rw-rw-r--. 1 student student    41 Oct 25 21:55 quayadmin_token
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Templates
+-rw-r--r--. 1 student student 43072 Oct 26 21:43 terminal-quayacm-review-26oct22.txt
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Videos
+[student@workstation ~]$ lab start operate-management
+
+Starting lab.
+
+ · Checking lab systems .............................................................................................................. SUCCESS
+ · Checking that the OCP hub is up and ready ......................................................................................... SUCCESS
+ · Checking that RHACM is installed. Installing if needed. This command takes a while. Do not interrupt the execution. ............... SUCCESS
+ · Checking that MulticlusterHub is deployed. Deploying if needed. This command takes a while. Do not interrupt the execution. ....... SUCCESS
+ · Importing the managed clusters. This command takes a while. Do not interrupt the execution. ....................................... SUCCESS
+ · Checking RHACS policies deployed in the previous exercise ......................................................................... SUCCESS
+ · Checking that RHACS is installed on the hub cluster. .............................................................................. SUCCESS
+ · Checking that RHACS is installed on the managed cluster. .......................................................................... SUCCESS
+ · Copy exercise files ............................................................................................................... SUCCESS
+ · Logging in to OCP4 hub cluster .................................................................................................... SUCCESS
+ · Project `etherpad` is not present in the local-cluster ............................................................................ FAIL
+    - Command did not exit with the expected code at 'workstation'
+    - Expected: 1, Received: 0
+    - stderr: b''
+    - Fix: The etherpad Project already exists, please delete it or run 'lab finish operate-vulnerability' before starting this GE
+ · Logging out ....................................................................................................................... SUCCESS
+
+[student@workstation ~]$ oc login -u admin -p redhat https://api.ocp4.example.com:6443
+Login successful.
+
+You have access to 83 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "default".
+[student@workstation ~]$  cd ~/DO480/labs/operate-management/
+[student@workstation operate-management]$ 
+[student@workstation operate-management]$ ls -l
+total 8
+-rw-rw-r--. 1 student student 2484 Oct 28 17:30 etherpad-deployment-limits.yaml
+-rw-rw-r--. 1 student student 2333 Oct 28 17:30 etherpad-deployment.yaml
+[student@workstation operate-management]$ cat etherpad-deployment.yaml 
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: etherpad
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: etherpad
+  namespace: etherpad
+  labels:
+    app.kubernetes.io/name: etherpad
+    app.kubernetes.io/version: "latest"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9001
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: etherpad
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+    openshift.io/host.generated: "true"
+  name: etherpad
+  namespace: etherpad
+  labels:
+    app.kubernetes.io/name: etherpad
+    app.kubernetes.io/version: "latest"
+spec:
+  host:
+  port:
+    targetPort: http
+  to:
+    kind: Service
+    name: etherpad
+    weight: 100
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: etherpad
+  namespace: etherpad
+  labels:
+    app.kubernetes.io/name: etherpad
+    app.kubernetes.io/version: "latest"
+spec:
+  accessModes:
+    - "ReadWriteMany"
+  resources:
+    requests:
+      storage: "1Gi"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: etherpad
+  namespace: etherpad
+  labels:
+    app.kubernetes.io/name: etherpad
+    app.kubernetes.io/version: "latest"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: etherpad
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: etherpad
+    spec:
+      securityContext:
+        {}
+      containers:
+        - env:
+          - name: TITLE
+            value: OpenShift 4 Etherpad
+          - name: DEFAULT_PAD_TEXT
+            value: OpenShift 4 Etherpad
+          name: etherpad
+          securityContext:
+            {}
+          image: "quay.io/redhattraining/etherpad:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 9001
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources: {}
+          volumeMounts:
+            - name: etherpad-data
+              mountPath: /opt/etherpad-lite/var
+      volumes:
+      - name: etherpad-data
+        persistentVolumeClaim:
+          claimName: etherpad
+
+[student@workstation operate-management]$ ls -l
+total 8
+-rw-rw-r--. 1 student student 2484 Oct 28 17:30 etherpad-deployment-limits.yaml
+-rw-rw-r--. 1 student student 2333 Oct 28 17:30 etherpad-deployment.yaml
+[student@workstation operate-management]$ oc create -f etherpad-deployment.yaml 
+Error from server (AlreadyExists): error when creating "etherpad-deployment.yaml": namespaces "etherpad" already exists
+Error from server (AlreadyExists): error when creating "etherpad-deployment.yaml": services "etherpad" already exists
+Error from server (AlreadyExists): error when creating "etherpad-deployment.yaml": routes.route.openshift.io "etherpad" already exists
+Error from server (AlreadyExists): error when creating "etherpad-deployment.yaml": persistentvolumeclaims "etherpad" already exists
+Error from server (AlreadyExists): error when creating "etherpad-deployment.yaml": deployments.apps "etherpad" already exists
+[student@workstation operate-management]$ oc delete -f etherpad-deployment.yaml 
+namespace "etherpad" deleted
+service "etherpad" deleted
+route.route.openshift.io "etherpad" deleted
+persistentvolumeclaim "etherpad" deleted
+deployment.apps "etherpad" deleted
+[student@workstation operate-management]$ oc create -f etherpad-deployment.yaml 
+namespace/etherpad created
+service/etherpad created
+route.route.openshift.io/etherpad created
+persistentvolumeclaim/etherpad created
+deployment.apps/etherpad created
+[student@workstation operate-management]$ oc delete -f etherpad-deployment.yaml 
+namespace "etherpad" deleted
+service "etherpad" deleted
+route.route.openshift.io "etherpad" deleted
+persistentvolumeclaim "etherpad" deleted
+deployment.apps "etherpad" deleted
+[student@workstation operate-management]$ pwd
+/home/student/DO480/labs/operate-management
+[student@workstation operate-management]$ ls -l
+total 8
+-rw-rw-r--. 1 student student 2484 Oct 28 17:30 etherpad-deployment-limits.yaml
+-rw-rw-r--. 1 student student 2333 Oct 28 17:30 etherpad-deployment.yaml
+[student@workstation operate-management]$ cat etherpad-deployment-limits.yaml 
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: etherpad
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: etherpad
+  namespace: etherpad
+  labels:
+    app.kubernetes.io/name: etherpad
+    app.kubernetes.io/version: "latest"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9001
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: etherpad
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+    openshift.io/host.generated: "true"
+  name: etherpad
+  namespace: etherpad
+  labels:
+    app.kubernetes.io/name: etherpad
+    app.kubernetes.io/version: "latest"
+spec:
+  host:
+  port:
+    targetPort: http
+  to:
+    kind: Service
+    name: etherpad
+    weight: 100
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: etherpad
+  namespace: etherpad
+  labels:
+    app.kubernetes.io/name: etherpad
+    app.kubernetes.io/version: "latest"
+spec:
+  accessModes:
+    - "ReadWriteMany"
+  resources:
+    requests:
+      storage: "1Gi"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: etherpad
+  namespace: etherpad
+  labels:
+    app.kubernetes.io/name: etherpad
+    app.kubernetes.io/version: "latest"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: etherpad
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: etherpad
+    spec:
+      securityContext:
+        {}
+      containers:
+        - env:
+          - name: TITLE
+            value: OpenShift 4 Etherpad
+          - name: DEFAULT_PAD_TEXT
+            value: OpenShift 4 Etherpad
+          name: etherpad
+          securityContext:
+            {}
+          image: "quay.io/redhattraining/etherpad:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 9001
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: etherpad-data
+              mountPath: /opt/etherpad-lite/var
+      volumes:
+      - name: etherpad-data
+        persistentVolumeClaim:
+          claimName: etherpad
+
+[student@workstation operate-management]$ oc create -f etherpad-deployment-limits.yaml 
+namespace/etherpad created
+service/etherpad created
+route.route.openshift.io/etherpad created
+persistentvolumeclaim/etherpad created
+deployment.apps/etherpad created
+[student@workstation operate-management]$ cd .
+[student@workstation operate-management]$ cd ..
+[student@workstation labs]$ cd .
+[student@workstation labs]$ cd ..
+[student@workstation DO480]$ cd ..
+[student@workstation ~]$ ls -l
+total 116
+-rw-rw-r--. 1 student student  1655 Oct 25 19:28 ca.crt
+-rw-rw-r--. 1 student student    27 Oct 27 20:59 Containerfile
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Desktop
+drwxrwxr-x. 4 student student    35 Oct 21 18:50 DO480
+drwxrwxr-x. 6 student student  4096 Oct 28 17:43 DO480-apps
+-rw-rw-r--. 1 student student  1292 Oct 21 21:22 DO480-labsolutions-observability-customize-211022.zip
+-rw-rw-r--. 1 student student  2049 Oct 21 19:59 DO480-labsolutions-observability-install-211022.zip
+-rw-rw-r--. 1 student student  2561 Oct 21 21:40 DO480-labsolutions-observability-review-211022.zip
+-rw-rw-r--. 1 student student 11372 Oct 21 19:15 DO480-labsolutions-policy-gatekeeper-211022.zip
+-rw-rw-r--. 1 student student 11340 Oct 20 21:33 DO480-labsolutions-policy-governance-201022.zip
+-rw-rw-r--. 1 student student  5105 Oct 26 19:31 DO480-labsolutions-quayacm-restrict.zip
+-rw-rw-r--. 1 student student  4150 Oct 26 21:40 DO480-labsolutions-quayacm-review.zip
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Documents
+drwxr-xr-x. 2 student student    52 Oct 27 19:50 Downloads
+-rw-rw-r--. 1 student student   451 Oct 26 20:48 finance-dev-deployer-secret.yml
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Music
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Pictures
+drwxrwxr-x. 8 student student   231 Oct 20 22:17 policy-collection
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Public
+-rw-rw-r--. 1 student student    41 Oct 25 21:55 quayadmin_token
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Templates
+-rw-r--r--. 1 student student 43072 Oct 26 21:43 terminal-quayacm-review-26oct22.txt
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Videos
+[student@workstation ~]$ zip -r DO480-labsolutions-operate-management.zip DO480
+  adding: DO480/ (stored 0%)
+  adding: DO480/labs/ (stored 0%)
+  adding: DO480/labs/quay-deploy/ (stored 0%)
+  adding: DO480/labs/quay-deploy/config.yaml (deflated 43%)
+  adding: DO480/labs/quay-deploy/quay-registry.yaml (deflated 45%)
+  adding: DO480/labs/quay-deploy/ldap.crt (deflated 28%)
+  adding: DO480/labs/quay-deploy/Containerfile (stored 0%)
+  adding: DO480/labs/rhacs-install/ (stored 0%)
+  adding: DO480/labs/rhacs-install/policy-rhacs-operator-central.yaml (deflated 73%)
+  adding: DO480/labs/rhacs-install/policy-rhacs-operator-install.yaml (deflated 77%)
+  adding: DO480/labs/rhacs-import/ (stored 0%)
+  adding: DO480/labs/rhacs-import/policy-rhacs-operator-secured-clusters.yaml (deflated 72%)
+  adding: DO480/labs/operate-integrate/ (stored 0%)
+  adding: DO480/labs/operate-integrate/hello-app.yaml (deflated 65%)
+  adding: DO480/labs/operate-vulnerability/ (stored 0%)
+  adding: DO480/labs/operate-vulnerability/etherpad-deployment.yaml (deflated 71%)
+  adding: DO480/labs/operate-management/ (stored 0%)
+  adding: DO480/labs/operate-management/etherpad-deployment-limits.yaml (deflated 71%)
+  adding: DO480/labs/operate-management/etherpad-deployment.yaml (deflated 71%)
+  adding: DO480/solutions/ (stored 0%)
+[student@workstation ~]$ lab finish operate-management
+
+Finishing lab.
+
+ · Verifying connectivity to OCP4 cluster ............................................................................................ SUCCESS
+ · Removing the etherpad namespace ................................................................................................... SUCCESS
+ · Removing the rhacs-install namespace .............................................................................................. SUCCESS
+ · Removing Quay. This command takes a while. Do not interrupt the execution. ........................................................ SUCCESS
+ · Removing the RHACS on hub cluster. This command takes a while. Do not interrupt the execution. .................................... SUCCESS
+ · Removing the RHACS on hub cluster. This command takes a while. Do not interrupt the execution. .................................... SUCCESS
+ · Remove lab files .................................................................................................................. SUCCESS
+ · Logging out ....................................................................................................................... SUCCESS
+
+[student@workstation ~]$ lab start operate-review
+
+Starting lab.
+
+ · Checking lab systems .............................................................................................................. SUCCESS
+ · Checking that the OCP hub is up and ready ......................................................................................... SUCCESS
+ · Checking that RHACM is installed. Installing if needed. This command takes a while. Do not interrupt the execution. ............... SUCCESS
+ · Checking that MulticlusterHub is deployed. Deploying if needed. This command takes a while. Do not interrupt the execution. ....... SUCCESS
+ · Importing the managed clusters. This command takes a while. Do not interrupt the execution. ....................................... SUCCESS
+ · Project 'operate-review' is not present ........................................................................................... SUCCESS
+ · Ensuring that Quay registry and the Quay operator are not present. This command can take more than 5 minutes. Do not interrupt
+   the execution. .................................................................................................................... SUCCESS
+ · Project 'rhacs-install' is not present from the previous exercise. Deleting if present. ........................................... SUCCESS
+ · Checking that RHACS is installed on hub cluster. Deleting if present. This command takes a while. Do not interrupt the execution. . SUCCESS
+ · Checking that RHACS is installed on managed cluster. Deleting if present. This command takes a while. Do not interrupt the
+   execution. ........................................................................................................................ SUCCESS
+ · Installing Quay. This command takes a while. Do not interrupt the execution. ...................................................... SUCCESS
+ · Copy exercise files ............................................................................................................... SUCCESS
+ · Deploying RHACM policies to install the RHACS operator, central and secured cluster ............................................... SUCCESS
+    - Project
+    - RHACS operator and RHACS resources
+ · Logging out ....................................................................................................................... SUCCESS
+
+[student@workstation ~]$ oc login -u admin -p redhat https//api.ocp4.example.com:6443
+error: Not a valid URL: parse "https://https%2F%2Fapi.ocp4.example.com:6443": invalid URL escape "%2F".
+[student@workstation ~]$ oc login -u admin -p redhat https://api.ocp4.example.com:6443
+Login successful.
+
+You have access to 82 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "default".
+[student@workstation ~]$ skopeo copy docker://quay.io/redhattraining/do480-hello-app:v1.0 docker://central-quay-registry.apps.ocp4.example.com/cloudadmin/hello-app:v1.0
+Getting image source signatures
+FATA[0000] trying to reuse blob sha256:e48a28e58eeee480b5ffb771ad8baef9f36fa5a69bbdda8628eea5ea1e8cf757 at destination: checking whether a blob sha256:e48a28e58eeee480b5ffb771ad8baef9f36fa5a69bbdda8628eea5ea1e8cf757 exists in central-quay-registry.apps.ocp4.example.com/cloudadmin/hello-app: unauthorized: authentication required 
+[student@workstation ~]$ podman login -u=cloudadmin -p=redhat central-quay-registry.apps.ocp4.example.com
+Login Succeeded!
+[student@workstation ~]$ skopeo copy docker://quay.io/redhattraining/do480-hello-app:v1.0 docker://central-quay-registry.apps.ocp4.example.com/cloudadmin/hello-app:v1.0
+Getting image source signatures
+Copying blob e48a28e58eee done  
+Copying blob d0f1b11979e5 done  
+Copying blob c01c16018528 done  
+Copying blob fb2c7947712d done  
+Copying blob 4f881121c355 done  
+Copying blob 973621a70105 done  
+Copying blob ba02c9da67ea done  
+Copying blob 1df9c923d956 done  
+Copying config 4b3aa537f2 done  
+Writing manifest to image destination
+Storing signatures
+[student@workstation ~]$ skopeo copy docker://quay.io/redhattraining/do480-hello-app:latest docker://central-quay-registry.apps.ocp4.example.com/cloudadmin/hello-app:latest
+Getting image source signatures
+Copying blob c01c16018528 skipped: already exists  
+Copying blob 973621a70105 skipped: already exists  
+Copying blob e48a28e58eee skipped: already exists  
+Copying blob ba02c9da67ea skipped: already exists  
+Copying blob d0f1b11979e5 skipped: already exists  
+Copying blob 4f881121c355 skipped: already exists  
+Copying blob fb2c7947712d skipped: already exists  
+Copying blob 9a8bdfbba952 done  
+Copying config 6b1a7e7918 done  
+Writing manifest to image destination
+Storing signatures
+[student@workstation ~]$ oc login -u admin -p redhat https://api.ocp4.example.com:6443
+Login successful.
+
+You have access to 82 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "default".
+[student@workstation ~]$ oc new-project operate-review
+Now using project "operate-review" on server "https://api.ocp4.example.com:6443".
+
+You can add applications to this project with the 'new-app' command. For example, try:
+
+    oc new-app rails-postgresql-example
+
+to build a new example application in Ruby. Or use kubectl to deploy a simple Kubernetes application:
+
+    kubectl create deployment hello-node --image=k8s.gcr.io/e2e-test-images/agnhost:2.33 -- /agnhost serve-hostname
+
+[student@workstation ~]$ cat /run/user/1000/containers/auth.json
+{
+	"auths": {
+		"central-quay-registry.apps.ocp4.example.com": {
+			"auth": "Y2xvdWRhZG1pbjpyZWRoYXQ="
+		}
+	}
+}[student@workstation ~]$ oc create secret generic quaysecret --from-file=.dockerconfigjson=/run/user/1000/containers/auth.json --type=kubernete.io/dockerconfigjson -n operate-review
+secret/quaysecret created
+[student@workstation ~]$ oc secrets link default quaysecret --for=pull -n operate-review
+[student@workstation ~]$ oc -n stackrox get secret central-htpasswd -o go-template='{{index .data "password" | base64decode}}'
+KiGTdOBaJtGFpYzRllY61VdcN[student@workstation ~]$ 
+[student@workstation ~]$ 
+[student@workstation ~]$ 
+[student@workstation ~]$ oc get route -n stackrox
+NAME           HOST/PORT                                PATH   SERVICES   PORT    TERMINATION   WILDCARD
+central        central-stackrox.apps.ocp4.example.com          central    https   passthrough   None
+central-mtls   central.stackrox                                central    https   passthrough   None
+[student@workstation ~]$ oc login -u admin -p redhat https://api.ocp4-mng.example.com:6443
+Login successful.
+
+You have access to 71 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "default".
+[student@workstation ~]$ oc create -f Downloads/operate-import-cluster-init-secrets.yaml -n stackrox
+secret/collector-tls created
+secret/sensor-tls created
+secret/admission-control-tls created
+[student@workstation ~]$ oc login -u admin -p redhat https://api.ocp4.example.com:6443
+Login successful.
+
+You have access to 83 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "default".
+[student@workstation ~]$ oc create -f Downloads/operate-import-cluster-init-secrets.yaml -n stackrox
+secret/collector-tls created
+secret/sensor-tls created
+secret/admission-control-tls created
+[student@workstation ~]$ central-quay-
+bash: central-quay-: command not found...
+[student@workstation ~]$ central-quay-registry.apps.ocp4.example.com
+bash: central-quay-registry.apps.ocp4.example.com: command not found...
+[student@workstation ~]$ oc login -u admin -p redhat https://api.ocp4.example.com:6443
+Login successful.
+
+You have access to 83 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "default".
+[student@workstation ~]$ cd ~/DO480/labs/operate-review/
+[student@workstation operate-review]$ oc create -f hello-quay.yaml
+deployment.apps/hello-quay created
+service/hello-quay created
+route.route.openshift.io/hello-quay created
+[student@workstation operate-review]$ oc get deployment hello-quay -n operate-review
+NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+hello-quay   1/1     1            1           25s
+[student@workstation operate-review]$ curl hello-quay.apps.ocp4.example.com
+Hello Application!
+Image version : latest
+[student@workstation operate-review]$ ls -l
+total 8
+-rw-rw-r--. 1 student student 1057 Oct 28 17:30 hello-central.yaml
+-rw-rw-r--. 1 student student  980 Oct 28 17:30 hello-quay.yaml
+[student@workstation operate-review]$ oc create -f hello-central.yaml 
+deployment.apps/hello-central created
+service/hello-central created
+route.route.openshift.io/hello-central created
+[student@workstation operate-review]$ oc get events -n operate-review | grep latest-tag-policy
+10s         Warning   StackRox enforcement   deployment/hello-central              Deployment violated StackRox policy "latest-tag-policy" and was scaled down
+[student@workstation operate-review]$ oc delete -f hello-central.yaml
+deployment.apps "hello-central" deleted
+service "hello-central" deleted
+route.route.openshift.io "hello-central" deleted
+[student@workstation operate-review]$ nano hello-central.yaml 
+[student@workstation operate-review]$ oc create -f hello-central.yaml 
+deployment.apps/hello-central created
+service/hello-central created
+route.route.openshift.io/hello-central created
+[student@workstation operate-review]$ oc get events -n operate-review | grep latest-tag-policy
+73s         Warning   StackRox enforcement   deployment/hello-central              Deployment violated StackRox policy "latest-tag-policy" and was scaled down
+[student@workstation operate-review]$ oc get deployment
+No resources found in default namespace.
+[student@workstation operate-review]$ oc get deployment -n operate-review
+NAME            READY   UP-TO-DATE   AVAILABLE   AGE
+hello-central   1/1     1            1           39s
+hello-quay      1/1     1            1           3m1s
+[student@workstation operate-review]$ curl hello-central.apps.ocp4.example.com
+Hello Application!
+Image version : v1.0
+[student@workstation operate-review]$ cd ..
+[student@workstation labs]$ cd .
+[student@workstation labs]$ cd ..
+[student@workstation DO480]$ cd ..
+[student@workstation ~]$ ls -l
+total 128
+-rw-rw-r--. 1 student student  1655 Oct 25 19:28 ca.crt
+-rw-rw-r--. 1 student student    27 Oct 27 20:59 Containerfile
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Desktop
+drwxrwxr-x. 4 student student    35 Oct 21 18:50 DO480
+drwxrwxr-x. 6 student student  4096 Oct 28 17:43 DO480-apps
+-rw-rw-r--. 1 student student  1292 Oct 21 21:22 DO480-labsolutions-observability-customize-211022.zip
+-rw-rw-r--. 1 student student  2049 Oct 21 19:59 DO480-labsolutions-observability-install-211022.zip
+-rw-rw-r--. 1 student student  2561 Oct 21 21:40 DO480-labsolutions-observability-review-211022.zip
+-rw-rw-r--. 1 student student 10485 Oct 28 18:56 DO480-labsolutions-operate-management.zip
+-rw-rw-r--. 1 student student 11372 Oct 21 19:15 DO480-labsolutions-policy-gatekeeper-211022.zip
+-rw-rw-r--. 1 student student 11340 Oct 20 21:33 DO480-labsolutions-policy-governance-201022.zip
+-rw-rw-r--. 1 student student  5105 Oct 26 19:31 DO480-labsolutions-quayacm-restrict.zip
+-rw-rw-r--. 1 student student  4150 Oct 26 21:40 DO480-labsolutions-quayacm-review.zip
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Documents
+drwxr-xr-x. 2 student student   100 Oct 28 19:20 Downloads
+-rw-rw-r--. 1 student student   451 Oct 26 20:48 finance-dev-deployer-secret.yml
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Music
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Pictures
+drwxrwxr-x. 8 student student   231 Oct 20 22:17 policy-collection
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Public
+-rw-rw-r--. 1 student student    41 Oct 25 21:55 quayadmin_token
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Templates
+-rw-r--r--. 1 student student 43072 Oct 26 21:43 terminal-quayacm-review-26oct22.txt
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Videos
+[student@workstation ~]$ zip -r DO480-labsolutions-operate-review.zip DO480
+  adding: DO480/ (stored 0%)
+  adding: DO480/labs/ (stored 0%)
+  adding: DO480/labs/quay-deploy/ (stored 0%)
+  adding: DO480/labs/quay-deploy/config.yaml (deflated 43%)
+  adding: DO480/labs/quay-deploy/quay-registry.yaml (deflated 45%)
+  adding: DO480/labs/quay-deploy/ldap.crt (deflated 28%)
+  adding: DO480/labs/quay-deploy/Containerfile (stored 0%)
+  adding: DO480/labs/rhacs-install/ (stored 0%)
+  adding: DO480/labs/rhacs-install/policy-rhacs-operator-central.yaml (deflated 73%)
+  adding: DO480/labs/rhacs-install/policy-rhacs-operator-install.yaml (deflated 77%)
+  adding: DO480/labs/rhacs-import/ (stored 0%)
+  adding: DO480/labs/rhacs-import/policy-rhacs-operator-secured-clusters.yaml (deflated 72%)
+  adding: DO480/labs/operate-integrate/ (stored 0%)
+  adding: DO480/labs/operate-integrate/hello-app.yaml (deflated 65%)
+  adding: DO480/labs/operate-vulnerability/ (stored 0%)
+  adding: DO480/labs/operate-vulnerability/etherpad-deployment.yaml (deflated 71%)
+  adding: DO480/labs/operate-review/ (stored 0%)
+  adding: DO480/labs/operate-review/hello-central.yaml (deflated 67%)
+  adding: DO480/labs/operate-review/hello-quay.yaml (deflated 65%)
+  adding: DO480/solutions/ (stored 0%)
+  adding: DO480/solutions/operate-review/ (stored 0%)
+  adding: DO480/solutions/operate-review/rhacs-install.yaml (deflated 85%)
+[student@workstation ~]$ lab finish operate-review
+
+Finishing lab.
+
+ · Logging in to OCP4 hub cluster .................................................................................................... SUCCESS
+ · Removing the operate-review namespace ............................................................................................. SUCCESS
+ · Ensuring that Quay registry and the Quay operator are not present. This command can take more than 5 minutes. Do not interrupt
+   the execution. .................................................................................................................... SUCCESS
+ · Checking that RHACS is installed on hub cluster. Deleting if present. This command takes a while. Do not interrupt the execution. . SUCCESS
+ · Checking that RHACS is installed on managed cluster. Deleting if present. This command takes a while. Do not interrupt the
+   execution. ........................................................................................................................ SUCCESS
+ · Logging out ....................................................................................................................... SUCCESS
+
+[student@workstation ~]$ 
+[student@workstation ~]$ 
+[student@workstation ~]$ 
+[student@workstation ~]$ 
+[student@workstation ~]$ 
+[student@workstation ~]$ ls -l
+total 140
+-rw-rw-r--. 1 student student  1655 Oct 25 19:28 ca.crt
+-rw-rw-r--. 1 student student    27 Oct 27 20:59 Containerfile
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Desktop
+drwxrwxr-x. 4 student student    35 Oct 21 18:50 DO480
+drwxrwxr-x. 6 student student  4096 Oct 28 17:43 DO480-apps
+-rw-rw-r--. 1 student student  1292 Oct 21 21:22 DO480-labsolutions-observability-customize-211022.zip
+-rw-rw-r--. 1 student student  2049 Oct 21 19:59 DO480-labsolutions-observability-install-211022.zip
+-rw-rw-r--. 1 student student  2561 Oct 21 21:40 DO480-labsolutions-observability-review-211022.zip
+-rw-rw-r--. 1 student student 10485 Oct 28 18:56 DO480-labsolutions-operate-management.zip
+-rw-rw-r--. 1 student student 11427 Oct 28 19:34 DO480-labsolutions-operate-review.zip
+-rw-rw-r--. 1 student student 11372 Oct 21 19:15 DO480-labsolutions-policy-gatekeeper-211022.zip
+-rw-rw-r--. 1 student student 11340 Oct 20 21:33 DO480-labsolutions-policy-governance-201022.zip
+-rw-rw-r--. 1 student student  5105 Oct 26 19:31 DO480-labsolutions-quayacm-restrict.zip
+-rw-rw-r--. 1 student student  4150 Oct 26 21:40 DO480-labsolutions-quayacm-review.zip
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Documents
+drwxr-xr-x. 2 student student   100 Oct 28 19:20 Downloads
+-rw-rw-r--. 1 student student   451 Oct 26 20:48 finance-dev-deployer-secret.yml
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Music
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Pictures
+drwxrwxr-x. 8 student student   231 Oct 20 22:17 policy-collection
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Public
+-rw-rw-r--. 1 student student    41 Oct 25 21:55 quayadmin_token
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Templates
+-rw-r--r--. 1 student student 43072 Oct 26 21:43 terminal-quayacm-review-26oct22.txt
+drwxr-xr-x. 2 student student     6 Oct 19 17:50 Videos
+[student@workstation ~]$ 
+
